@@ -1,41 +1,79 @@
-import 'package:camera/camera.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
+// main.dart
+
 import 'package:flutter/material.dart';
-import 'package:techsow/screens/home.dart';
-import 'package:techsow/screens/welcome_screen.dart';
-import 'package:techsow/theme/theme.dart';
+import 'homepage.dart';
 
-void main() async{
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
-
-   // Get available cameras
-  final cameras = await availableCameras();
-  final camera = cameras.first; // Assuming you want the first camera
-  
-  runApp(const MyApp());
+void main() {
+  runApp(TecsowApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  // This widget is the root of your application.
+class TecsowApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
-      theme: lightMode,
-      home: StreamBuilder(
-        stream: FirebaseAuth.instance.authStateChanges(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-          return HomePage();
-        } else {
-          return const WelcomeScreen();
-        }
-        }
+      home: TecsowHomePage(),
+    );
+  }
+}
+
+class TecsowHomePage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/images/fronttree.jpg'),
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              RichText(
+                textAlign: TextAlign.center,
+                text: TextSpan(
+                  style: TextStyle(
+                    fontSize: 36,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    fontFamily: 'YourFont',
+                  ),
+                  children: [
+                    TextSpan(text: 'Welcome\n'),
+                    TextSpan(text: 'Techsow'),
+                  ],
+                ),
+              ),
+              SizedBox(height: 30),
+              ElevatedButton(
+                onPressed: () {
+                  // Navigate to the home page (HomePage) on button press
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => HomePage()),
+                  );
+                },
+                child: Text(
+                  'Get Started',
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.white,
+                    fontFamily: 'YourFont',
+                  ),
+                ),
+                style: ElevatedButton.styleFrom(
+                  primary: Colors.green[900],
+                  onPrimary: Colors.white,
+                ),
+              ),
+              SizedBox(height: 50),
+            ],
+          ),
+        ),
       ),
     );
   }
