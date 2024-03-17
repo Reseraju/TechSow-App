@@ -1,7 +1,6 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:techsow/controllers/rover_controller.dart';
 import 'package:techsow/screens/choose_crop.dart';
 import 'package:techsow/screens/fertilizer_calculator.dart';
 
@@ -18,6 +17,13 @@ class _HomePageState extends State<HomePage> {
   int index = 0;
 
   late List<CameraDescription> cameras;
+
+  String selectedCrop = 'Tomato'; // Default selected crop
+  final Map<String, String> cropSuggestions = {
+    'Tomato': 'Here are some suggestions for your tomato crop...',
+    'Potato': 'Here are some suggestions for your Potato crop...',
+    // Add more crop suggestions here
+  };
 
   @override
   void initState() {
@@ -74,149 +80,191 @@ class _HomePageState extends State<HomePage> {
       extendBodyBehindAppBar: true,
 
       //body
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          const Padding(
-            padding: const EdgeInsets.only(top: 80.0, left: 8.0),
-            child: Text(
-              'Select Crop',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
+      body: ListView(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              const Text(
+                'Select Crop',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-          ),
-          SizedBox(
-            height: 120, // Adjust the height as needed
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20.0), // Rounded border
-                  color: Colors.white // Container background color
-                  ),
-              child: ListView(
+              SizedBox(
+                height: 120,
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  children: [
+                    _buildCropSelectionButton(
+                        'assets/images/tomato.jpg', 'Tomato'),
+                    _buildCropSelectionButton(
+                        'assets/images/cassava.jpg', 'Potato'),
+                    // Add more crop selection buttons here
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(8.0),
+                decoration: BoxDecoration(
+                  color: Colors.green.withOpacity(0.3),
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Heal Your Crop',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    if (selectedCrop ==
+                        'Tomato') // Display text for tomato crop
+                      const Column(
+                        children: [
+                          SizedBox(height: 10),
+                          Text(
+                            'Avoid overhead watering by using drip or furrow irrigation. Remove and dispose of all diseased plant material. Prune plants to promote air circulation. Spraying with a copper fungicide will give fairly good control of the bacterial disease.',
+                            style: TextStyle(
+                              fontSize: 16,
+                            ),
+                          ),
+                        ],
+                      ),
+                    if (selectedCrop ==
+                        'Potato') // Display text for potato crop
+                      const Column(
+                        children: [
+                          SizedBox(height: 10),
+                          Text(
+                            'Keep the soil moist but not soggy. Don\'t plant potatoes and tomatoes near each other -- they are affected by the same diseases. Remove infected or diseased plants from the garden. Remove potato debris from the garden after harvest.',
+                            style: TextStyle(
+                              fontSize: 16,
+                            ),
+                          ),
+                        ],
+                      ),
+                    // Add a default case if needed
+                  ],
+                ),
+              ),
+              const SizedBox(height: 30),
+              SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      print("clicked tomato");
-                    },
-                    child: Container(
-                      width: 80, // Adjust the width and height as needed
-                      height: 80,
-                      margin: const EdgeInsets.symmetric(horizontal: 4.0),
-                      decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
-                        image: DecorationImage(
-                          image: AssetImage('assets/images/tomato.jpg'),
-                          fit: BoxFit.cover,
+                child: Container(
+                  color: Colors.green.withOpacity(0.3),
+                  padding: const EdgeInsets.all(16.0),
+                  width: MediaQuery.of(context).size.width - 32,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          print("clicked");
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => FertilizerCalculatorPage(),
+                            ),
+                          );
+                        },
+                        child: Column(
+                          children: [
+                            Image.asset('assets/images/fertilizer_count.png',
+                                width: 80, height: 80),
+                            const SizedBox(height: 20),
+                            const Text(
+                              'Calculate Fertilizer Count',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      print("clicked cassava");
-                    },
-                    child: Container(
-                      width: 80, // Adjust the width and height as needed
-                      height: 80,
-                      margin: const EdgeInsets.symmetric(horizontal: 4.0),
-                      decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
-                        image: DecorationImage(
-                          image: AssetImage('assets/images/cassava.jpg'),
-                          fit: BoxFit.cover,
+                      const SizedBox(width: 40),
+                      GestureDetector(
+                        onTap: () {
+                          print("clicked another");
+                        },
+                        child: Column(
+                          children: [
+                            Image.asset('assets/images/cultivation_tips.jpeg',
+                                width: 80, height: 80),
+                            const SizedBox(height: 20),
+                            const Text(
+                              'Cultivation Tips',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ),
+                    ],
                   ),
-
-                  GestureDetector(
-                    onTap: () {
-                      // Handle click on the plus symbol
-                    },
-                    child: Container(
-                      width: 80, // Adjust the width and height as needed
-                      height: 80,
-                      margin: const EdgeInsets.symmetric(horizontal: 4.0),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors
-                            .grey[300], // Background color for the plus symbol
-                      ),
-                      child: Icon(
-                        Icons.add,
-                        size: 40,
-                        color: Colors.grey[600], // Color of the plus symbol
-                      ),
-                    ),
-                  ),
-                  // Add more GestureDetector widgets for additional crops
-                ],
+                ),
               ),
-            ),
-          ),
-          const SizedBox(height: 30),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Container(
-              color: Colors.green.withOpacity(0.3),
-              padding: const EdgeInsets.all(16.0),
-              width: MediaQuery.of(context).size.width - 32,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      print("clicked");
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => FertilizerCalculatorPage(),
-                        ),
-                      );
-                    },
-                    child: Column(
-                      children: [
-                        Image.asset('assets/images/fertilizer_count.png',
-                            width: 80, height: 80),
-                        const SizedBox(height: 20),
-                        const Text(
-                          'Calculate Fertilizer Count',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 40),
-                  GestureDetector(
-                    onTap: () {
-                      print("clicked another");
-                    },
-                    child: Column(
-                      children: [
-                        Image.asset('assets/images/cultivation_tips.jpeg',
-                            width: 80, height: 80),
-                        const SizedBox(height: 20),
-                        const Text(
-                          'Cultivation Tips',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+              const SizedBox(
+                height: 20,
               ),
-            ),
+              InkWell(
+                onTap: () {
+                  // Handle take picture button tap
+                },
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(16.0),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[200],
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.asset(
+                        'assets/images/scanCrop.png',
+                        width: 400,
+                        height: 115,
+                        fit: BoxFit.cover,
+                      ),
+                      const SizedBox(height: 8),
+                      SizedBox(
+                        width: 200, // Adjust width as needed
+                        height: 53,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            // Handle take picture button press
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) {
+                                  return ChooseCrop(
+                                      cameras:
+                                          cameras); // Pass cameras to ChooseCrop
+                                },
+                              ),
+                            );
+                          },
+                          child: const Text('Take Picture'),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ]),
           ),
-        ]),
+        ],
       ),
+      // add a container
 
       // Bottom Navbar
       bottomNavigationBar: BottomNavigationBar(
@@ -279,29 +327,27 @@ class _HomePageState extends State<HomePage> {
       return Colors.blueAccent;
     }
   }
-}
 
-// class HomePage extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: const Text('Example Page'),
-//         actions:  [
-//           IconButton(
-//             icon: const Icon(Icons.logout),
-//             onPressed: () {
-//               FirebaseAuth.instance.signOut();
-//             },
-//           ),
-//         ],
-//       ),
-//       body: const Center(
-//         child: Text(
-//           'This is an example page!',
-//           style: TextStyle(fontSize: 24.0),
-//         ),
-//       ),
-//     );
-//   }
-// }
+  Widget _buildCropSelectionButton(String imagePath, String label) {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          selectedCrop = label;
+        });
+      },
+      child: Container(
+        width: 100,
+        margin: const EdgeInsets.symmetric(horizontal: 8.0),
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(color: Colors.black),
+        ),
+        child: CircleAvatar(
+          radius: 40,
+          backgroundImage: AssetImage(imagePath),
+          backgroundColor: Colors.white,
+        ),
+      ),
+    );
+  }
+}
