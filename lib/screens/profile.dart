@@ -10,82 +10,59 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  late User _user;
-  String? _userName;
-  String? _userEmail;
+  String _name = "";
+  String _email = "";
+  String _imageUrl = "";
+  bool _isFetchingData = false;
 
   @override
   void initState() {
     super.initState();
-    _getUserDetails();
+    _fetchUserData();
   }
 
-  Future<void> _getUserDetails() async {
-    _user = _auth.currentUser!;
-    DocumentSnapshot userSnapshot =
-        await _firestore.collection('User').doc(_user.uid).get();
+  Future<void> _fetchUserData() async {
     setState(() {
-      _userName = userSnapshot['name'];
-      _userEmail = userSnapshot['email'];
+      _isFetchingData = true;
     });
+    try {
+      // Get current user ID
+      final String userId = _auth.currentUser!.uid;
+
+      // Get user document from Firestore
+      final DocumentSnapshot? document =
+          await _firestore.collection('User').doc(userId).get();
+
+      if (document != null && document.exists) {
+        setState(() {
+          _name = document['name'];
+          _email = document['email'];
+          _imageUrl = document['imgUrl'];
+        });
+      }
+    } catch (error) {
+      // Handle errors during data fetching
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error fetching user data: $error'),
+        ),
+      );
+    } finally {
+      setState(() {
+        _isFetchingData = false;
+      });
+    }
   }
 
   Future<void> _updateUserProfile(String newName, String newEmail) async {
-    await _firestore.collection('User').doc(_user.uid).update({
+    await _firestore.collection('User').doc(_auth.currentUser!.uid).update({
       'name': newName,
       'email': newEmail,
     });
     setState(() {
-      _userName = newName;
-      _userEmail = newEmail;
+      _name = newName;
+      _email = newEmail;
     });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Profile'),
-        backgroundColor: Color.fromARGB(255, 165, 182, 143),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.edit),
-            onPressed: () {
-              _showUpdateDialog();
-            },
-          ),
-        ],
-      ),
-      body: Padding(
-        padding: EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(Icons.person),
-                SizedBox(width: 10),
-                Text(
-                  _userName ?? 'Name',
-                  style: TextStyle(fontSize: 18.0),
-                ),
-              ],
-            ),
-            SizedBox(height: 20.0),
-            Row(
-              children: [
-                Icon(Icons.email),
-                SizedBox(width: 10),
-                Text(
-                  _userEmail ?? 'Email',
-                  style: TextStyle(fontSize: 18.0),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
   }
 
   void _showUpdateDialog() {
@@ -117,7 +94,6 @@ class _ProfilePageState extends State<ProfilePage> {
           actions: [
             ElevatedButton(
               onPressed: () {
-                // Update profile
                 _updateUserProfile(newName, newEmail);
                 Navigator.pop(context);
               },
@@ -132,6 +108,107 @@ class _ProfilePageState extends State<ProfilePage> {
           ],
         );
       },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Profile'),
+        backgroundColor: Color.fromARGB(255, 165, 182, 143),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.edit),
+            onPressed: _showUpdateDialog,
+          ),
+        ],
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Profile picture section
+              _isFetchingData
+                  ? CircularProgressIndicator() // Show progress indicator while fetching
+                  : _imageUrl?.isNotEmpty ?? false
+                      ? CircleAvatar(
+                          radius: 50.0,
+                          backgroundImage: NetworkImage(_imageUrl!),
+                        )
+                      : CircleAvatar(
+                          radius: 50.0,
+                          backgroundImage:
+                              AssetImage('assets/default_profile.png'),
+                        ),
+              SizedBox(height: 20.0),
+
+              // User name section
+              Text(
+                _name,
+                style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 10.0),
+
+              // User email section
+              Text(
+                _email,
+                style: TextStyle(fontSize: 16.0, color: Colors.grey),
+              ),
+              SizedBox(height: 20.0),
+
+              // Plant detections section (same as before)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Plant Detections',
+                    style: TextStyle(fontSize: 18.0),
+                  ),
+                  Text(
+                    '10', // Replace with number of detections
+                    style:
+                        TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+              Divider(height: 1.0),
+              SizedBox(height: 10.0),
+              // ...
+
+              // Saved plants section (optional)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Saved Plants',
+                    style: TextStyle(fontSize: 18.0),
+                  ),
+                  Text(
+                    '5', // Replace with number of saved plants
+                    style:
+                        TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+              Divider(height: 1.0),
+              // ...
+
+              // Settings button
+              SizedBox(height: 20.0),
+              ElevatedButton(
+                onPressed: () {
+                  // Navigate to settings page
+                },
+                child: Text('Settings'),
+              ),
+              // ...
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
