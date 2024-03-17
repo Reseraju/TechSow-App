@@ -12,7 +12,6 @@ class ChooseCrop extends StatefulWidget {
 }
 
 class _ChooseCropState extends State<ChooseCrop> {
-
   late List<CameraDescription> cameras;
 
   @override
@@ -28,7 +27,6 @@ class _ChooseCropState extends State<ChooseCrop> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
       appBar: AppBar(
         title: Text('Choose Crop'),
         iconTheme: const IconThemeData(color: Colors.black),
@@ -55,7 +53,8 @@ class _ChooseCropState extends State<ChooseCrop> {
                     navigateToCameraScreen(context, 'tomato');
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color.fromARGB(255, 198, 183, 182), // Change the background color here
+                    backgroundColor: Color.fromARGB(
+                        255, 198, 183, 182), // Change the background color here
                   ),
                   child: Row(
                     children: [
@@ -64,7 +63,9 @@ class _ChooseCropState extends State<ChooseCrop> {
                         height: 80,
                         width: 80,
                       ),
-                      const SizedBox(width: 30,),
+                      const SizedBox(
+                        width: 30,
+                      ),
                       const Text(
                         'Tomato',
                         style: TextStyle(
@@ -80,7 +81,8 @@ class _ChooseCropState extends State<ChooseCrop> {
                     navigateToCameraScreen(context, 'potato');
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color.fromARGB(255, 198, 183, 182), // Change the background color here
+                    backgroundColor: Color.fromARGB(
+                        255, 198, 183, 182), // Change the background color here
                   ),
                   child: Row(
                     children: [
@@ -107,13 +109,15 @@ class _ChooseCropState extends State<ChooseCrop> {
     );
   }
 
-
   void navigateToCameraScreen(BuildContext context, String cropName) {
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) {
-          return CameraScreen(cameras: cameras , cropName: cropName,);
+          return CameraScreen(
+            cameras: cameras,
+            cropName: cropName,
+          );
         },
       ),
     );

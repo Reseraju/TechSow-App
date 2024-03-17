@@ -60,12 +60,93 @@ class _CameraScreenState extends State<CameraScreen> {
 
   Future<void> _runModels(File imageFile) async {
     if (widget.cropName == 'tomato') {
-      await _runTomatoModel(imageFile);
+      await _runNoLeafTomatoModel(imageFile);
+      // await _runTomatoModel(imageFile);
     } else if (widget.cropName == 'potato') {
-      await _runPotatoModel(imageFile);
+      await _runNoLeafPotatoModel(imageFile);
+      // await _runPotatoModel(imageFile);
     } else {
       print('Unknown crop name: ${widget.cropName}');
     }
+  }
+
+  Future<void> _runNoLeafTomatoModel(File imageFile) async {
+    await Tflite.loadModel(
+      model: "assets/model/noLeafModel.tflite",
+      labels: "assets/model/noLeafLabels.txt",
+      isAsset: true,
+      numThreads: 1,
+      useGpuDelegate: false,
+    );
+
+    final output = await Tflite.runModelOnImage(
+      path: imageFile.path,
+      numResults: 1,
+      threshold: 0.5,
+      imageMean: 127.5,
+      imageStd: 127.5,
+    );
+
+    if (output != null && output.isNotEmpty) {
+      if (output[0]['label'] == 'Not a leaf') {
+        _showNotLeafResultScreen();
+      } else {
+        await _runTomatoModel(imageFile);
+      }
+    }
+  }
+
+  Future<void> _runNoLeafPotatoModel(File imageFile) async {
+    await Tflite.loadModel(
+      model: "assets/model/noLeafModel.tflite",
+      labels: "assets/model/noLeafLabels.txt",
+      isAsset: true,
+      numThreads: 1,
+      useGpuDelegate: false,
+    );
+
+    final output = await Tflite.runModelOnImage(
+      path: imageFile.path,
+      numResults: 1,
+      threshold: 0.5,
+      imageMean: 127.5,
+      imageStd: 127.5,
+    );
+
+    if (output != null && output.isNotEmpty) {
+      if (output[0]['label'] == 'Not a leaf') {
+        _showNotLeafResultScreen();
+      } else {
+        await _runTomatoModel(imageFile);
+      }
+    }
+  }
+
+  void _showNotLeafResultScreen() {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          height: 400,
+          width: 400,
+          color: Colors.black,
+          padding: const EdgeInsets.all(20),
+          child: const Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                'This is not a leaf!',
+                style: TextStyle(
+                  fontSize: 20,
+                  color: Colors.grey,
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   Future<void> _runTomatoModel(File imageFile) async {
