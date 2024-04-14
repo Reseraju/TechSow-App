@@ -60,235 +60,237 @@ class _FertilizerCalculatorPageState extends State<FertilizerCalculatorPage> {
       appBar: AppBar(
         title: const Text('Fertilizer Calculator'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Fertilizer Calculator',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Fertilizer Calculator',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                const Text(
-                  'See relevant information on',
-                  style: TextStyle(
-                    fontSize: 16,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                DropdownButton<String>(
-                  value: selectedPlant,
-                  items: plants
-                      .map((plant) => DropdownMenuItem<String>(
-                            value: plant,
-                            child: Text(plant),
-                          ))
-                      .toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      selectedPlant = value!;
-                      fetchThresholdValues(); // Fetch threshold values when plant is changed
-                    });
-                  },
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  'Nutrient quantities',
-                  style: TextStyle(
-                    fontSize: 16,
-                  ),
-                ),
-                IconButton(
-                  icon: Icon(isEditable ? Icons.edit : Icons.edit_off),
-                  onPressed: () {
-                    setState(() {
-                      isEditable = !isEditable;
-                    });
-                  },
-                ),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Flexible(
-                  child: TextField(
-                    enabled: isEditable,
-                    keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(
-                      hintText: 'N',
-                      border: OutlineInputBorder(),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  const Text(
+                    'See relevant information on',
+                    style: TextStyle(
+                      fontSize: 16,
                     ),
+                  ),
+                  const SizedBox(width: 8),
+                  DropdownButton<String>(
+                    value: selectedPlant,
+                    items: plants
+                        .map((plant) => DropdownMenuItem<String>(
+                              value: plant,
+                              child: Text(plant),
+                            ))
+                        .toList(),
                     onChanged: (value) {
                       setState(() {
-                        nitrogen = double.parse(value);
+                        selectedPlant = value!;
+                        fetchThresholdValues(); // Fetch threshold values when plant is changed
                       });
                     },
                   ),
-                ),
-                const SizedBox(width: 8),
-                Flexible(
-                  child: TextField(
-                    enabled: isEditable,
-                    keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(
-                      hintText: 'P',
-                      border: OutlineInputBorder(),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'Nutrient quantities',
+                    style: TextStyle(
+                      fontSize: 16,
                     ),
-                    onChanged: (value) {
+                  ),
+                  IconButton(
+                    icon: Icon(isEditable ? Icons.edit : Icons.edit_off),
+                    onPressed: () {
                       setState(() {
-                        phosphorus = double.parse(value);
+                        isEditable = !isEditable;
                       });
                     },
                   ),
-                ),
-                const SizedBox(width: 8),
-                Flexible(
-                  child: TextField(
-                    enabled: isEditable,
-                    keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(
-                      hintText: 'K',
-                      border: OutlineInputBorder(),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Flexible(
+                    child: TextField(
+                      enabled: isEditable,
+                      keyboardType: TextInputType.number,
+                      decoration: const InputDecoration(
+                        hintText: 'N',
+                        border: OutlineInputBorder(),
+                      ),
+                      onChanged: (value) {
+                        setState(() {
+                          nitrogen = double.parse(value);
+                        });
+                      },
                     ),
-                    onChanged: (value) {
-                      setState(() {
-                        potassium = double.parse(value);
-                      });
-                    },
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 19),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  'Unit',
-                  style: TextStyle(
-                    fontSize: 16,
+                  const SizedBox(width: 8),
+                  Flexible(
+                    child: TextField(
+                      enabled: isEditable,
+                      keyboardType: TextInputType.number,
+                      decoration: const InputDecoration(
+                        hintText: 'P',
+                        border: OutlineInputBorder(),
+                      ),
+                      onChanged: (value) {
+                        setState(() {
+                          phosphorus = double.parse(value);
+                        });
+                      },
+                    ),
                   ),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Radio<String>(
-                      value: "Acre",
-                      groupValue: selectedUnit,
-                      onChanged: (value) =>
-                          setState(() => selectedUnit = value!),
+                  const SizedBox(width: 8),
+                  Flexible(
+                    child: TextField(
+                      enabled: isEditable,
+                      keyboardType: TextInputType.number,
+                      decoration: const InputDecoration(
+                        hintText: 'K',
+                        border: OutlineInputBorder(),
+                      ),
+                      onChanged: (value) {
+                        setState(() {
+                          potassium = double.parse(value);
+                        });
+                      },
                     ),
-                    const Text("Acre"),
-                    const SizedBox(width: 8),
-                    Radio<String>(
-                      value: "Hectare",
-                      groupValue: selectedUnit,
-                      onChanged: (value) =>
-                          setState(() => selectedUnit = value!),
-                    ),
-                    const Text("Hectare"),
-                    const SizedBox(width: 8),
-                    Radio<String>(
-                      value: "Gunta",
-                      groupValue: selectedUnit,
-                      onChanged: (value) =>
-                          setState(() => selectedUnit = value!),
-                    ),
-                    const Text("Gunta"),
-                  ],
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  'Plot size',
-                  style: TextStyle(
-                    fontSize: 16,
                   ),
-                ),
-                Container(
-                  width: 120,
-                  child: Row(
+                ],
+              ),
+              const SizedBox(height: 19),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'Unit',
+                    style: TextStyle(
+                      fontSize: 16,
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Flexible(
-                        child: TextField(
-                          keyboardType: TextInputType.number,
-                          decoration: InputDecoration(
-                            hintText: 'Size',
-                            border: OutlineInputBorder(),
+                      Radio<String>(
+                        value: "Acre",
+                        groupValue: selectedUnit,
+                        onChanged: (value) =>
+                            setState(() => selectedUnit = value!),
+                      ),
+                      const Text("Acre"),
+                      const SizedBox(width: 8),
+                      Radio<String>(
+                        value: "Hectare",
+                        groupValue: selectedUnit,
+                        onChanged: (value) =>
+                            setState(() => selectedUnit = value!),
+                      ),
+                      const Text("Hectare"),
+                      const SizedBox(width: 8),
+                      Radio<String>(
+                        value: "Gunta",
+                        groupValue: selectedUnit,
+                        onChanged: (value) =>
+                            setState(() => selectedUnit = value!),
+                      ),
+                      const Text("Gunta"),
+                    ],
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'Plot size',
+                    style: TextStyle(
+                      fontSize: 16,
+                    ),
+                  ),
+                  Container(
+                    width: 120,
+                    child: Row(
+                      children: [
+                        const Flexible(
+                          child: TextField(
+                            keyboardType: TextInputType.number,
+                            decoration: InputDecoration(
+                              hintText: 'Size',
+                              border: OutlineInputBorder(),
+                            ),
                           ),
                         ),
-                      ),
-                      const SizedBox(width: 8),
-                      Flexible(
-                        child: Container(
-                          width: 50,
-                          height: 50,
-                          decoration: const BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.blue,
-                          ),
-                          child: const Center(
-                            child: Text(
-                              'Unit',
-                              style: TextStyle(
-                                color: Colors.white,
+                        const SizedBox(width: 8),
+                        Flexible(
+                          child: Container(
+                            width: 50,
+                            height: 50,
+                            decoration: const BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.blue,
+                            ),
+                            child: const Center(
+                              child: Text(
+                                'Unit',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                ),
                               ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Container(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    // Handle calculate button press
+                    calculateAndDisplay();
+                  },
+                  child: const Text('Calculate'),
                 ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            Container(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
-                  // Handle calculate button press
-                  calculateAndDisplay();
-                },
-                child: const Text('Calculate'),
               ),
-            ),
-            const SizedBox(height: 16),
-            // Display calculated NPK values
-            Text(
-              'Required adjustments:',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
+              const SizedBox(height: 16),
+              // Display calculated NPK values
+              Text(
+                'Required adjustments:',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Nitrogen: ${calculateAdjustment(nitrogen, thresholdNitrogen)}',
-            ),
-            Text(
-              'Phosphorus: ${calculateAdjustment(phosphorus, thresholdPhosphorus)}',
-            ),
-            Text(
-              'Potassium: ${calculateAdjustment(potassium, thresholdPotassium)}',
-            ),
-          ],
+              const SizedBox(height: 8),
+              Text(
+                'Nitrogen: ${calculateAdjustment(nitrogen, thresholdNitrogen)}',
+              ),
+              Text(
+                'Phosphorus: ${calculateAdjustment(phosphorus, thresholdPhosphorus)}',
+              ),
+              Text(
+                'Potassium: ${calculateAdjustment(potassium, thresholdPotassium)}',
+              ),
+            ],
+          ),
         ),
       ),
     );

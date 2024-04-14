@@ -41,6 +41,7 @@ dependencies:
   permission_handler: ^11.3.0
   image: ^3.3.0
   flutter_tflite: ^1.0.1
+  flutter_vision: ^1.1.4
   
 
 dev_dependencies:
@@ -88,6 +89,12 @@ flutter:
 
     - assets/model/noLeafModel.tflite           # model to identify whether the image is leaf or not
     - assets/model/noLeafLabels.txt
+
+    - assets/model/leafAndNotALeaf_model.tflite
+    - assets/model/leafAndNotALeaf_labels.txt
+
+    - assets/model/yolo_labels.txt
+    - assets/model/yolov5n.tflite
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

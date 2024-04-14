@@ -114,12 +114,10 @@ class _ChooseCropState extends State<ChooseCrop> {
       context,
       MaterialPageRoute(
         builder: (context) {
-          return CameraScreen(
-            cameras: cameras,
-            cropName: cropName,
-          );
+          return CameraApp();
         },
       ),
     );
+    print(cropName);
   }
 }

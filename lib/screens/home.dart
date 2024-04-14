@@ -5,7 +5,8 @@ import 'package:techsow/screens/choose_crop.dart';
 import 'package:techsow/screens/fertilizer_calculator.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  
+  const HomePage({super.key,});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -101,7 +102,7 @@ class _HomePageState extends State<HomePage> {
                     _buildCropSelectionButton(
                         'assets/images/tomato.jpg', 'Tomato'),
                     _buildCropSelectionButton(
-                        'assets/images/cassava.jpg', 'Potato'),
+                        'assets/images/potato_icon.png', 'Potato'),
                     // Add more crop selection buttons here
                   ],
                 ),
@@ -163,7 +164,7 @@ class _HomePageState extends State<HomePage> {
                   padding: const EdgeInsets.all(16.0),
                   width: MediaQuery.of(context).size.width - 32,
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       GestureDetector(
                         onTap: () {
@@ -189,25 +190,25 @@ class _HomePageState extends State<HomePage> {
                           ],
                         ),
                       ),
-                      const SizedBox(width: 40),
-                      GestureDetector(
-                        onTap: () {
-                          print("clicked another");
-                        },
-                        child: Column(
-                          children: [
-                            Image.asset('assets/images/cultivation_tips.jpeg',
-                                width: 80, height: 80),
-                            const SizedBox(height: 20),
-                            const Text(
-                              'Cultivation Tips',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                      //const SizedBox(width: 40),
+                      // GestureDetector(
+                      //   onTap: () {
+                      //     print("clicked another");
+                      //   },
+                      //   child: Column(
+                      //     children: [
+                      //       Image.asset('assets/images/cultivation_tips.jpeg',
+                      //           width: 80, height: 80),
+                      //       const SizedBox(height: 20),
+                      //       const Text(
+                      //         'Cultivation Tips',
+                      //         style: TextStyle(
+                      //           fontWeight: FontWeight.bold,
+                      //         ),
+                      //       ),
+                      //     ],
+                      //   ),
+                      // ),
                     ],
                   ),
                 ),
