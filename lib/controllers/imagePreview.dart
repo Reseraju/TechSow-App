@@ -21,36 +21,72 @@ class _ImagePreviewScreenState extends State<ImagePreviewScreen> {
   int imageHeight = 1;
   int imageWidth = 1;
   bool isLoaded = false;
+  bool isError = false;
 
   @override
   void initState() {
     super.initState();
-    loadYoloModel().then((value) {
+    _initializeYoloModel().then((value) {
       setState(() {
         yoloResults = [];
         isLoaded = true;
       });
+    }).catchError((error) {
+      setState(() {
+        isError = true;
+      });
+      print('Error loading YOLO model: $error');
     });
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
-  Future<void> loadYoloModel() async {
-    await widget.vision.loadYoloModel(
+  Future<void> _initializeYoloModel() async {
+    try {
+      await widget.vision.loadYoloModel(
         labels: 'assets/model/yolo_labels.txt',
         modelPath: 'assets/model/yolov5n.tflite',
         modelVersion: "yolov5",
         quantization: false,
         numThreads: 2,
-        useGpu: true);
+        useGpu: true,
+      );
+      setState(() {
+        isLoaded = true;
+      });
+    } catch (e) {
+      setState(() {
+        isError = true;
+      });
+      print('Error loading YOLO model: $e');
+    }
   }
+
+
+  @override
+  void dispose() async{
+    super.dispose();
+    await widget.vision.closeYoloModel();
+  }
+
+  // Future<void> loadYoloModel() async {
+  //   await widget.vision.loadYoloModel(
+  //       labels: 'assets/model/yolo_labels.txt',
+  //       modelPath: 'assets/model/yolov5n.tflite',
+  //       modelVersion: "yolov5",
+  //       quantization: false,
+  //       numThreads: 2,
+  //       useGpu: true);
+  // }
 
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
+    if (isError) {
+      return const Scaffold(
+        body: Center(
+          child: Text("Error loading model"),
+        ),
+      );
+    }
     if (!isLoaded) {
       return const Scaffold(
         body: Center(

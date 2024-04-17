@@ -1,6 +1,6 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:techsow/controllers/camera_screen.dart';
+import 'package:techsow/controllers/potato_crop.dart';
 
 class ChooseCrop extends StatefulWidget {
   final List<CameraDescription> cameras;
@@ -110,14 +110,26 @@ class _ChooseCropState extends State<ChooseCrop> {
   }
 
   void navigateToCameraScreen(BuildContext context, String cropName) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) {
-          return CameraApp();
-        },
-      ),
-    );
+    if (cropName == 'tomato') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) {
+            return CameraApp();
+          },
+        ),
+      );
+    }
+    if (cropName == 'potato') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) {
+            return CameraApp();
+          },
+        ),
+      );
+    }
     print(cropName);
   }
 }
