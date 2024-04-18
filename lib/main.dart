@@ -43,7 +43,6 @@ class MyApp extends StatelessWidget {
         '/rover': (context) =>
             RoverControlPage(), // Define the IoT app development page route
         '/profile': (context) => ProfilePage(),
-        '/scanner': (context) => CameraApp(),
       },
     );
   }

@@ -1,6 +1,7 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:techsow/controllers/potato_crop.dart';
+import 'package:techsow/controllers/tomato_crop.dart';
 
 class ChooseCrop extends StatefulWidget {
   final List<CameraDescription> cameras;
@@ -115,7 +116,7 @@ class _ChooseCropState extends State<ChooseCrop> {
         context,
         MaterialPageRoute(
           builder: (context) {
-            return CameraApp();
+            return TomatoCropCameraApp();
           },
         ),
       );
@@ -125,7 +126,7 @@ class _ChooseCropState extends State<ChooseCrop> {
         context,
         MaterialPageRoute(
           builder: (context) {
-            return CameraApp();
+            return PotatoCropCameraApp();
           },
         ),
       );

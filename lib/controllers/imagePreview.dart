@@ -175,12 +175,3 @@ class _ImagePreviewScreenState extends State<ImagePreviewScreen> {
   }
 }
 
-// i want to run a yolo model using loadYoloModel from 
-// flutter_vision package and run the yolo model
-// on an image that is selected by the user
-// so when they select an image it will show the output  
-// of the yolo model when they click on detect button
-
-// if there are any objects in the image then display them
-// else display "No Objects Detected
-// how can we run a yolo model on a captured image or on a picked image from gallery ?

@@ -42,7 +42,6 @@ class _RoverControlPageState extends State<RoverControlPage> {
       appBar: AppBar(
         title: Text('Rover Control'),
         iconTheme: const IconThemeData(color: Colors.black),
-        // backgroundColor: Colors.transparent,
         backgroundColor: Color.fromARGB(255, 165, 182, 143),
         elevation: 3,
       ),
@@ -77,86 +76,79 @@ class _RoverControlPageState extends State<RoverControlPage> {
                 ),
                 padding: EdgeInsets.all(20),
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
+                    // Forward button
+                    ElevatedButton(
+                      onPressed: isConnected
+                          ? () => _sendCommand('forward')
+                          : null,
+                      child: Text('^', style: TextStyle(fontSize: 20)),
+                      style: ElevatedButton.styleFrom(
+                        padding: EdgeInsets.all(20),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 20),
+
+                    // Left and Right buttons
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Expanded(
-                          child: ElevatedButton(
-                            onPressed: isConnected
-                                ? () => _sendCommand('forward')
-                                : null,
-                            child:
-                                Text('^', style: TextStyle(fontSize: 20)),
-                            style: ElevatedButton.styleFrom(
-                              padding: EdgeInsets.all(15),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
+                        ElevatedButton(
+                          onPressed: isConnected ? () => _sendCommand('left') : null,
+                          child: Text('<', style: TextStyle(fontSize: 20)),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.green,
+                            padding: EdgeInsets.all(20),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
                             ),
-                            // disabledBackgroundColor:
-                            //     Colors.green.withOpacity(0.3),
                           ),
                         ),
-                        SizedBox(width: 15),
-                        Expanded(
-                          child: ElevatedButton(
-                            onPressed: isConnected
-                                ? () => _sendCommand('backward')
-                                : null,
-                            child: Text('Backward',
-                                style: TextStyle(fontSize: 20)),
-                            style: ElevatedButton.styleFrom(
-                              padding: EdgeInsets.all(15),
-                              backgroundColor:
-                                  const Color.fromARGB(255, 106, 207, 110),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              // disabledBackgroundColor:
-                              //     Colors.green.withOpacity(0.3),
+                        ElevatedButton(
+                          onPressed: isConnected ? () => _sendCommand('right') : null,
+                          child: Text('>', style: TextStyle(fontSize: 20)),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.green.withOpacity(0.3),
+                            padding: EdgeInsets.all(20),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
                             ),
                           ),
                         ),
                       ],
                     ),
                     SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Expanded(
-                          child: ElevatedButton(
-                            onPressed:
-                                isConnected ? () => _sendCommand('left') : null,
-                            child: Text('Left', style: TextStyle(fontSize: 20)),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.green,
-                              padding: EdgeInsets.all(15),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                            ),
-                          ),
+
+                    // Backward button
+                    ElevatedButton(
+                      onPressed: isConnected
+                          ? () => _sendCommand('backward')
+                          : null,
+                      child: Text('v', style: TextStyle(fontSize: 20)),
+                      style: ElevatedButton.styleFrom(
+                        padding: EdgeInsets.all(20),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
                         ),
-                        SizedBox(width: 15),
-                        Expanded(
-                          child: ElevatedButton(
-                            onPressed: isConnected
-                                ? () => _sendCommand('right')
-                                : null,
-                            child:
-                                Text('Right', style: TextStyle(fontSize: 20)),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.green.withOpacity(0.3),
-                              padding: EdgeInsets.all(15),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                            ),
-                          ),
+                      ),
+                    ),
+                    SizedBox(height: 20),
+
+                    // Start/Stop button
+                    ElevatedButton(
+                      onPressed: () => _toggleStartStop(),
+                      child: Text(isRunning ? 'Stop' : 'Start', style: TextStyle(fontSize: 18)),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: isRunning ? Colors.red : Colors.green,
+                        padding: EdgeInsets.symmetric(vertical: 12, horizontal: 50),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
                         ),
-                      ],
+                      ),
                     ),
                   ],
                 ),

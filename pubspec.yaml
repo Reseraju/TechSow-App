@@ -40,8 +40,8 @@ dependencies:
   get: ^4.6.6
   permission_handler: ^11.3.0
   image: ^3.3.0
-  flutter_vision: ^1.1.4
   image_picker: ^0.8.9
+  flutter_vision: ^1.1.4
   
 
 dev_dependencies:
@@ -93,8 +93,8 @@ flutter:
     - assets/model/yolo_labels.txt
     - assets/model/yolov5n.tflite
 
-    - assets/model/tomato_model_teachable.tflite
-    - assets/model/tomato_labels_teachable.txt
+    - assets/model/tomatoYoloModel.tflite
+    - assets/model/tomato_yolo_labels.txt
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

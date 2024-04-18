@@ -10,15 +10,15 @@ late List<CameraDescription> _cameras;
 late CameraController _controller;
 late Future<void> _initializeControllerFuture;
 
-class CameraApp extends StatefulWidget {
+class PotatoCropCameraApp extends StatefulWidget {
   
-  const CameraApp({Key? key,}) : super(key: key);
+  const PotatoCropCameraApp({Key? key,}) : super(key: key);
 
   @override
-  State<CameraApp> createState() => _CameraAppState();
+  State<PotatoCropCameraApp> createState() => _CameraAppState();
 }
 
-class _CameraAppState extends State<CameraApp> {
+class _CameraAppState extends State<PotatoCropCameraApp> {
   late FlutterVision vision; // Initialize the FlutterVision instance
   File? imageFile;
 
