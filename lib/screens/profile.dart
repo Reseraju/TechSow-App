@@ -160,26 +160,26 @@ class _ProfilePageState extends State<ProfilePage> {
               SizedBox(height: 20.0),
 
               // Plant detections section (same as before)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Plant Detections',
-                    style: TextStyle(fontSize: 18.0),
-                  ),
-                  Text(
-                    '10', // Replace with number of detections
-                    style:
-                        TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
-                  ),
-                ],
-              ),
+              // Row(
+              //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //   children: [
+              //     Text(
+              //       'Plant Detections',
+              //       style: TextStyle(fontSize: 18.0),
+              //     ),
+              //     Text(
+              //       '10', // Replace with number of detections
+              //       style:
+              //           TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+              //     ),
+              //   ],
+              // ),
               Divider(height: 1.0),
               SizedBox(height: 10.0),
               // ...
 
               // Saved plants section (optional)
-              Row(
+              const Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
@@ -187,7 +187,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     style: TextStyle(fontSize: 18.0),
                   ),
                   Text(
-                    '5', // Replace with number of saved plants
+                    '2', // Replace with number of saved plants
                     style:
                         TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
                   ),
@@ -198,12 +198,12 @@ class _ProfilePageState extends State<ProfilePage> {
 
               // Settings button
               SizedBox(height: 20.0),
-              ElevatedButton(
-                onPressed: () {
-                  // Navigate to settings page
-                },
-                child: Text('Settings'),
-              ),
+              // ElevatedButton(
+              //   onPressed: () {
+              //     // Navigate to settings page
+              //   },
+              //   child: Text('Settings'),
+              // ),
               // ...
             ],
           ),

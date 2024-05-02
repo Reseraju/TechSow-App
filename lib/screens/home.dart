@@ -5,8 +5,9 @@ import 'package:techsow/screens/choose_crop.dart';
 import 'package:techsow/screens/fertilizer_calculator.dart';
 
 class HomePage extends StatefulWidget {
-  
-  const HomePage({super.key,});
+  const HomePage({
+    super.key,
+  });
 
   @override
   State<HomePage> createState() => _HomePageState();

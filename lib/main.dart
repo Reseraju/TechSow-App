@@ -1,8 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:techsow/controllers/potato_crop.dart';
-import 'package:techsow/controllers/rover_controller.dart';
+import 'package:techsow/rover/npkResults.dart';
+import 'package:techsow/rover/rover_controller.dart';
 import 'package:techsow/screens/home.dart';
 import 'package:techsow/screens/profile.dart';
 import 'package:techsow/screens/welcome_screen.dart';
@@ -13,8 +13,6 @@ import 'package:techsow/theme/theme.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-
-  
 
   runApp(const MyApp());
 }
@@ -43,6 +41,7 @@ class MyApp extends StatelessWidget {
         '/rover': (context) =>
             RoverControlPage(), // Define the IoT app development page route
         '/profile': (context) => ProfilePage(),
+        '/npkResults' : (context) => NPKResultsPage(),
       },
     );
   }

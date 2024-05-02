@@ -1,5 +1,5 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 
 class RoverControlPage extends StatefulWidget {
   @override
@@ -7,33 +7,41 @@ class RoverControlPage extends StatefulWidget {
 }
 
 class _RoverControlPageState extends State<RoverControlPage> {
-
-  final String _serverUrl = 'http://192.168.1.100'; // Replace with your ESP32's IP address
+  String _serverIp = '192.168.185.190'; // Default ESP32 IP address
+  int _serverPort = 59430; // Default ESP32 port number
   bool isConnected = false; // Track connection status
-  bool isRunning = false; // Track rover running state
 
-  void _sendCommand(String command) async{
-    final url = Uri.parse('$_serverUrl/move?cmd=$command');
-    await http.get(url);
-    print('Sending command: $command');
+  RawDatagramSocket? _socket; // Socket for UDP communication
+
+  @override
+  void initState() {
+    super.initState();
+    _initUdpConnection();
   }
 
-  void _toggleStartStop() {
-    setState(() {
-      isRunning = !isRunning;
-      if (isRunning && !isConnected) {
-        // Show a warning if trying to start without connection
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Please connect to the rover before starting'),
-          ),
-        );
-      } else if (isRunning) {
-        _sendCommand('start');
-      } else {
-        _sendCommand('stop');
-      }
-    });
+  Future<void> _initUdpConnection() async {
+    try {
+      _socket = await RawDatagramSocket.bind(InternetAddress.anyIPv4, 0);
+      setState(() {
+        isConnected = true;
+      });
+    } catch (e) {
+      print('Failed to bind UDP socket: $e');
+    }
+  }
+
+  void _sendCommand(String command) {
+    if (_socket != null) {
+      final data = command.codeUnits;
+      _socket!.send(data, InternetAddress(_serverIp), _serverPort);
+      print('Sending command: $command');
+    }
+  }
+
+  @override
+  void dispose() {
+    _socket?.close();
+    super.dispose();
   }
 
   @override
@@ -50,22 +58,18 @@ class _RoverControlPageState extends State<RoverControlPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Connection status indicator
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // Icon(
-                //     isConnected
-                //         ? Icons.bluetooth_connected
-                //         : Icons.bluetooth_disabled,
-                //     size: 30,
-                //     color: Colors.blue),
-                // SizedBox(width: 10),
-                // Text(isConnected ? 'Connected' : 'Disconnected',
-                //     style: TextStyle(fontSize: 18, color: Colors.blue)),
-              ],
+            // Connection settings
+            TextField(
+              decoration: InputDecoration(labelText: 'Server IP'),
+              onChanged: (value) => _serverIp = value,
             ),
-            SizedBox(height: 30),
+            SizedBox(height: 10),
+            TextField(
+              decoration: InputDecoration(labelText: 'Server Port'),
+              keyboardType: TextInputType.number,
+              onChanged: (value) => _serverPort = int.parse(value),
+            ),
+            SizedBox(height: 20),
 
             // Rover controls
             Expanded(
@@ -80,9 +84,7 @@ class _RoverControlPageState extends State<RoverControlPage> {
                   children: [
                     // Forward button
                     ElevatedButton(
-                      onPressed: isConnected
-                          ? () => _sendCommand('forward')
-                          : null,
+                      onPressed: isConnected ? () => _sendCommand('f') : null,
                       child: Text('^', style: TextStyle(fontSize: 20)),
                       style: ElevatedButton.styleFrom(
                         padding: EdgeInsets.all(20),
@@ -98,7 +100,7 @@ class _RoverControlPageState extends State<RoverControlPage> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         ElevatedButton(
-                          onPressed: isConnected ? () => _sendCommand('left') : null,
+                          onPressed: isConnected ? () => _sendCommand('l') : null,
                           child: Text('<', style: TextStyle(fontSize: 20)),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.green,
@@ -109,7 +111,7 @@ class _RoverControlPageState extends State<RoverControlPage> {
                           ),
                         ),
                         ElevatedButton(
-                          onPressed: isConnected ? () => _sendCommand('right') : null,
+                          onPressed: isConnected ? () => _sendCommand('r') : null,
                           child: Text('>', style: TextStyle(fontSize: 20)),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.green.withOpacity(0.3),
@@ -125,9 +127,7 @@ class _RoverControlPageState extends State<RoverControlPage> {
 
                     // Backward button
                     ElevatedButton(
-                      onPressed: isConnected
-                          ? () => _sendCommand('backward')
-                          : null,
+                      onPressed: isConnected ? () => _sendCommand('b') : null,
                       child: Text('v', style: TextStyle(fontSize: 20)),
                       style: ElevatedButton.styleFrom(
                         padding: EdgeInsets.all(20),
@@ -138,12 +138,12 @@ class _RoverControlPageState extends State<RoverControlPage> {
                     ),
                     SizedBox(height: 20),
 
-                    // Start/Stop button
+                    // Stop button
                     ElevatedButton(
-                      onPressed: () => _toggleStartStop(),
-                      child: Text(isRunning ? 'Stop' : 'Start', style: TextStyle(fontSize: 18)),
+                      onPressed: isConnected ? () => _sendCommand('s') : null,
+                      child: Text('Stop', style: TextStyle(fontSize: 18)),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: isRunning ? Colors.red : Colors.green,
+                        backgroundColor: Colors.red,
                         padding: EdgeInsets.symmetric(vertical: 12, horizontal: 50),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),

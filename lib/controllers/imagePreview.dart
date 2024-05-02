@@ -60,6 +60,45 @@ class _ImagePreviewScreenState extends State<ImagePreviewScreen> {
     }
   }
 
+  void _showBottomSheet(String disease) {
+    List<String> symptoms = _getSymptomsForPotatoDisease(disease);
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (BuildContext context) {
+        return SingleChildScrollView(
+          child: Container(
+            padding: EdgeInsets.all(20.0),
+            width: double.infinity,
+            height: 300,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Disease: $disease',
+                  style: const TextStyle(
+                    fontSize: 20.0,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 10.0),
+                ...symptoms
+                    .map((symptom) => Padding(
+                          padding: const EdgeInsets.only(bottom: 8.0),
+                          child: Text(
+                            '- $symptom',
+                            style: const TextStyle(fontSize: 16.0),
+                          ),
+                        ))
+                    .toList(),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
 
   @override
   void dispose() async{
@@ -135,6 +174,9 @@ class _ImagePreviewScreenState extends State<ImagePreviewScreen> {
       setState(() {
         yoloResults = result;
       });
+      String disease = result.first[
+          'tag']; // Assuming the first detected object represents the disease
+      _showBottomSheet(disease);
     }
   }
 
@@ -172,6 +214,26 @@ class _ImagePreviewScreenState extends State<ImagePreviewScreen> {
         ),
       );
     }).toList();
+  }
+
+
+  List<String> _getSymptomsForPotatoDisease(String disease) {
+    switch (disease) {
+      case 'Healthy':
+        return [
+          'Healthy potato leaf!'
+        ];
+      case 'Early-Blight':
+        return [
+          'Early blight is primarily a disease of stressed or senescing plants. Symptoms appear first on the oldest foliage. Affected leaves develop circular to angular dark brown lesions 0.12 to 0.16 inch (3–4 mm) in diameter. Concentric rings often form in lesions to produce characteristic target-board effect.'
+        ];
+      case 'Late-Blight':
+        return [
+          'The first symptoms of late blight in the field are small, light to dark green, circular to irregular-shaped water-soaked spots (Figure 1). These lesions usually appear first on the lower leaves. Lesions often begin to develop near the leaf tips or edges, where dew is retained the longest.'
+        ];
+      default:
+        return [];
+    }
   }
 }
 
