@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:techsow/rover/npkResults.dart';
 
 class RoverControlPage extends StatefulWidget {
   @override
@@ -10,6 +12,9 @@ class _RoverControlPageState extends State<RoverControlPage> {
   String _serverIp = '192.168.185.190'; // Default ESP32 IP address
   int _serverPort = 59430; // Default ESP32 port number
   bool isConnected = false; // Track connection status
+  bool isReadingNPK = false; // Track if NPK reading is in progress
+  int countdownSeconds = 15; // Countdown timer duration (15 seconds)
+  Timer? countdownTimer; // Timer object
 
   RawDatagramSocket? _socket; // Socket for UDP communication
 
@@ -38,9 +43,31 @@ class _RoverControlPageState extends State<RoverControlPage> {
     }
   }
 
+  void _startReadingNPK() {
+    setState(() {
+      isReadingNPK = true;
+      countdownSeconds = 15; // Reset countdown timer
+    });
+
+    _sendCommand('a'); // Send the 'r' command to read NPK values
+
+    // Start the countdown timer
+    countdownTimer = Timer.periodic(Duration(seconds: 1), (Timer timer) {
+      setState(() {
+        if (countdownSeconds > 0) {
+          countdownSeconds--;
+        } else {
+          timer.cancel(); // Cancel the timer when it reaches 0
+          isReadingNPK = false; // Reset the NPK reading flag
+        }
+      });
+    });
+  }
+
   @override
   void dispose() {
     _socket?.close();
+    countdownTimer?.cancel(); // Cancel the countdown timer
     super.dispose();
   }
 
@@ -100,7 +127,8 @@ class _RoverControlPageState extends State<RoverControlPage> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         ElevatedButton(
-                          onPressed: isConnected ? () => _sendCommand('l') : null,
+                          onPressed:
+                              isConnected ? () => _sendCommand('l') : null,
                           child: Text('<', style: TextStyle(fontSize: 20)),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.green,
@@ -111,7 +139,8 @@ class _RoverControlPageState extends State<RoverControlPage> {
                           ),
                         ),
                         ElevatedButton(
-                          onPressed: isConnected ? () => _sendCommand('r') : null,
+                          onPressed:
+                              isConnected ? () => _sendCommand('r') : null,
                           child: Text('>', style: TextStyle(fontSize: 20)),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.green.withOpacity(0.3),
@@ -138,17 +167,48 @@ class _RoverControlPageState extends State<RoverControlPage> {
                     ),
                     SizedBox(height: 20),
 
+                    // Read NPK button
+                    ElevatedButton(
+                      onPressed: isConnected && !isReadingNPK
+                          ? () => _startReadingNPK()
+                          : null,
+                      child: isReadingNPK
+                          ? Text('Waiting... $countdownSeconds',
+                              style: TextStyle(fontSize: 18))
+                          : Text('Read NPK', style: TextStyle(fontSize: 18)),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue,
+                        padding:
+                            EdgeInsets.symmetric(vertical: 12, horizontal: 50),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 20),
+
                     // Stop button
                     ElevatedButton(
                       onPressed: isConnected ? () => _sendCommand('s') : null,
                       child: Text('Stop', style: TextStyle(fontSize: 18)),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red,
-                        padding: EdgeInsets.symmetric(vertical: 12, horizontal: 50),
+                        padding:
+                            EdgeInsets.symmetric(vertical: 12, horizontal: 50),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
+                    ),
+                    SizedBox(height: 20),
+
+                    // Button to navigate to NPKPage
+                    ElevatedButton(
+                      onPressed: () {
+                        // Call the method to navigate to NPKPage
+                        _navigateToNPKPage();
+                      },
+                      child: Text('See NPK Result'),
                     ),
                   ],
                 ),
@@ -156,6 +216,16 @@ class _RoverControlPageState extends State<RoverControlPage> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  // Method to navigate to NPKPage
+  void _navigateToNPKPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => NPKPage(),
       ),
     );
   }

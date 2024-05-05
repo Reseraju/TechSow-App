@@ -233,11 +233,14 @@ class _TomatoPreviewState extends State<TomatoPreview> {
         ];
       case 'Mosaic virus':
         return [
-          'The fruit may be distorted, yellow blotches and necrotic spots may occur on both ripe and green fruit and there may be internal browning of the fruit wall. In young plants, the infection reduces the set of fruit and may cause distortions and blemishes. The entire plant may be dwarfed and the flowers discoloured.'
+          'The fruit may be distorted, yellow blotches and necrotic spots may occur on both ripe and green fruit and there may be internal browning of the fruit wall. ',
+          'In young plants, the infection reduces the set of fruit and may cause distortions and blemishes. The entire plant may be dwarfed and the flowers discoloured.'
         ];
       case 'Septoria leaf spot':
         return [
-          'The first symptoms appear as small, water-soaked, circular spots 1/16 to 1/8" in diameter on the undersides of older leaves. The centers of these spots then turn gray to tan and have a dark-brown margin. The spots are distinctively circular and are often quite numerous.'
+          'The first symptoms appear as small, water-soaked, circular spots 1/16 to 1/8" in diameter on the undersides of older leaves.',
+          ' The centers of these spots then turn gray to tan and have a dark-brown margin. ',
+          'The spots are distinctively circular and are often quite numerous.',
         ];
       case 'Yellow virus':
         return [
@@ -258,7 +261,8 @@ class _TomatoPreviewState extends State<TomatoPreview> {
         ];
       case 'Late blight':
         return [
-          'Leaf symptoms of late blight first appear as small, water-soaked areas that rapidly enlarge to form purple-brown, oily-appearing blotches. On the lower side of leaves, rings of grayish white mycelium and spore-forming structures may appear around the blotches.'
+          'Leaf symptoms of late blight first appear as small, water-soaked areas that rapidly enlarge to form purple-brown, oily-appearing blotches. ',
+          'On the lower side of leaves, rings of grayish white mycelium and spore-forming structures may appear around the blotches.'
         ];
       default:
         return [];

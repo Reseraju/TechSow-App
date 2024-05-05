@@ -1,74 +1,285 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 
-class NPKResultsPage extends StatefulWidget {
+class NPKPage extends StatefulWidget {
   @override
-  _NPKResultsPageState createState() => _NPKResultsPageState();
+  _NPKPageState createState() => _NPKPageState();
 }
 
-class _NPKResultsPageState extends State<NPKResultsPage> {
-  DatabaseReference _database = FirebaseDatabase.instance.ref('crop/');
-  Map<String, dynamic> _npkData = {
-    'nitrogen': '',
-    'phosphorus': '',
-    'potassium': '',
-  };
+class _NPKPageState extends State<NPKPage> {
+  late DatabaseReference _databaseReference;
+  Map<String, dynamic> _npkValues = {};
+  String? _selectedCrop;
+  String _nitrogenStatus = '';
+  String _phosphorusStatus = '';
+  String _potassiumStatus = '';
+  String _fertilizer = '';
 
   @override
   void initState() {
     super.initState();
-    fetchData(); // Call the method to fetch data
+    _initializeDatabase();
   }
 
-  Future<void> fetchData() async {
-    _database.child('crop').child('tomato').onValue.listen((DatabaseEvent event) {
-      DataSnapshot snapshot = event.snapshot;
-      if (snapshot.value != null && snapshot.value is Map<dynamic, dynamic>) {
+  Future<void> _initializeDatabase() async {
+    FirebaseApp app = await Firebase.initializeApp();
+    _databaseReference = FirebaseDatabase.instanceFor(
+      app: app,
+      databaseURL:
+          'https://techsow-5d67d.asia-southeast1.firebasedatabase.app/',
+    ).ref().child('NPK');
+
+    _fetchNPKValues();
+  }
+
+  void _fetchNPKValues() {
+    _databaseReference.once().then((DatabaseEvent event) {
+      if (event.snapshot.value != null) {
         setState(() {
-          _npkData = Map<String, dynamic>.from(snapshot.value as Map<dynamic, dynamic>);
+          _npkValues = Map<String, dynamic>.from(event.snapshot.value as Map);
         });
       }
+    }).catchError((error) {
+      print('Error fetching NPK values: $error');
     });
   }
 
-  Future<void> writeData() async {
-    _database.child('crop').child('tomato').onValue.listen((DatabaseEvent event) {
-      DataSnapshot snapshot = event.snapshot;
-      if (snapshot.value != null && snapshot.value is Map<dynamic, dynamic>) {
-        setState(() {
-          _npkData = Map<String, dynamic>.from(snapshot.value as Map<dynamic, dynamic>);
-        });
+  void _calculateDeficiencies() {
+    if (_selectedCrop == 'Tomato') {
+      // Ideal NPK values for tomato: N (30-60), P (30-90), K (60-150)
+      if (_npkValues['nitrogen']! < 30) {
+        _nitrogenStatus = 'Deficient';
+      } else {
+        _nitrogenStatus = 'Sufficient';
       }
-    });
+
+      if (_npkValues['phosphorus']! < 30) {
+        _phosphorusStatus = 'Deficient';
+      } else {
+        _phosphorusStatus = 'Sufficient';
+      }
+
+      if (_npkValues['potassium']! < 60) {
+        _potassiumStatus = 'Deficient';
+      } else {
+        _potassiumStatus = 'Sufficient';
+      }
+
+      // Provide fertilizer recommendation
+      if (_nitrogenStatus == 'Deficient' ||
+          _phosphorusStatus == 'Deficient' ||
+          _potassiumStatus == 'Deficient') {
+        _fertilizer = 'Apply a balanced NPK fertilizer (e.g., 10-10-10)';
+      } else {
+        _fertilizer = 'No fertilizer needed';
+      }
+    } else if (_selectedCrop == 'Potato') {
+      // Ideal NPK values for potato: N (80-160), P (40-100), K (120-300)
+      if (_npkValues['nitrogen']! < 80) {
+        _nitrogenStatus = 'Deficient';
+      } else {
+        _nitrogenStatus = 'Sufficient';
+      }
+
+      if (_npkValues['phosphorus']! < 40) {
+        _phosphorusStatus = 'Deficient';
+      } else {
+        _phosphorusStatus = 'Sufficient';
+      }
+
+      if (_npkValues['potassium']! < 120) {
+        _potassiumStatus = 'Deficient';
+      } else {
+        _potassiumStatus = 'Sufficient';
+      }
+
+      // Provide fertilizer recommendation
+      if (_nitrogenStatus == 'Deficient' ||
+          _phosphorusStatus == 'Deficient' ||
+          _potassiumStatus == 'Deficient') {
+        _fertilizer = 'Apply a high NPK fertilizer (e.g., 15-15-15)';
+      } else {
+        _fertilizer = 'No fertilizer needed';
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    String nitrogen = _npkData['nitrogen'] ?? '';
-    String phosphorus = _npkData['phosphorus'] ?? '';
-    String potassium = _npkData['potassium'] ?? '';
-
     return Scaffold(
       appBar: AppBar(
-        title: const Text('NPK Results'),
+        title: Text('NPK Analyzer'),
+        centerTitle: true,
+        backgroundColor: Color.fromARGB(255, 165, 182, 143),
       ),
-      body: Center(
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Nitrogen: $nitrogen',
-              style: const TextStyle(fontSize: 20.0),
+              'NPK Values',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.green,
+              ),
             ),
-            const SizedBox(height: 16.0),
-            Text(
-              'Phosphorus: $phosphorus',
-              style: const TextStyle(fontSize: 20.0),
+            SizedBox(height: 16),
+            Card(
+              elevation: 4,
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Column(
+                      children: [
+                        Text(
+                          'Nitrogen',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(height: 8),
+                        Text(
+                          '${_npkValues['nitrogen'] ?? ''}',
+                          style: TextStyle(fontSize: 18),
+                        ),
+                      ],
+                    ),
+                    Column(
+                      children: [
+                        Text(
+                          'Phosphorus',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(height: 8),
+                        Text(
+                          '${_npkValues['phosphorus'] ?? ''}',
+                          style: TextStyle(fontSize: 18),
+                        ),
+                      ],
+                    ),
+                    Column(
+                      children: [
+                        Text(
+                          'Potassium',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(height: 8),
+                        Text(
+                          '${_npkValues['potassium'] ?? ''}',
+                          style: TextStyle(fontSize: 18),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
             ),
-            const SizedBox(height: 16.0),
+            SizedBox(height: 32),
             Text(
-              'Potassium: $potassium',
-              style: const TextStyle(fontSize: 20.0),
+              'Select Crop',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.green,
+              ),
+            ),
+            SizedBox(height: 8),
+            DropdownButton<String>(
+              value: _selectedCrop,
+              onChanged: (String? newValue) {
+                setState(() {
+                  _selectedCrop = newValue;
+                  _calculateDeficiencies();
+                });
+              },
+              items: <String>['Tomato', 'Potato']
+                  .map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
+            ),
+            SizedBox(height: 16),
+            if (_selectedCrop != null)
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Deficiencies',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.green,
+                    ),
+                  ),
+                  SizedBox(height: 8),
+                  _buildDeficiencyTile('Nitrogen', _nitrogenStatus),
+                  _buildDeficiencyTile('Phosphorus', _phosphorusStatus),
+                  _buildDeficiencyTile('Potassium', _potassiumStatus),
+                  SizedBox(height: 16),
+                  Text(
+                    'Fertilizer Recommendation',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.green,
+                    ),
+                  ),
+                  SizedBox(height: 8),
+                  Card(
+                    elevation: 4,
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Text(
+                        _fertilizer,
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDeficiencyTile(String nutrient, String status) {
+    return Card(
+      elevation: 4,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Row(
+          children: [
+            Text(
+              '$nutrient:',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                status,
+                style: TextStyle(
+                  fontSize: 16,
+                  color: status == 'Deficient' ? Colors.red : Colors.green,
+                ),
+              ),
             ),
           ],
         ),
